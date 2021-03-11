@@ -43,6 +43,7 @@
       <module>hawkbit-example-ddi-feign-client</module>
       <module>hawkbit-example-mgmt-feign-client</module>
       <module>hawkbit-example-mgmt-simulator</module>
+      <module>hawkbit-gcp-iot-core</module>
    </modules>
 
    <properties>

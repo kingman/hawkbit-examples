@@ -146,7 +146,7 @@ public class DmfReceiverService extends MessageService {
 			}
 
 			if (MessageType.PING_RESPONSE.equals(messageType)) {
-				final String correlationId = message.getMessageProperties().getCorrelationIdString();
+				final String correlationId = message.getMessageProperties().getCorrelationId();
 				if (!openPings.remove(correlationId)) {
 					LOGGER.error("Unknown PING_RESPONSE received for correlationId: {}.", correlationId);
 				}

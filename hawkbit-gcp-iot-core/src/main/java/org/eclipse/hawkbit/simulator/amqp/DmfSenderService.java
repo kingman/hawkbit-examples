@@ -1,10 +1,10 @@
-/**
- * Copyright (c) 2015 Bosch Software Innovations GmbH and others.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+/*
+  Copyright (c) 2015 Bosch Software Innovations GmbH and others.
+
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
  */
 package org.eclipse.hawkbit.simulator.amqp;
 
@@ -22,7 +22,6 @@ import org.eclipse.hawkbit.dmf.json.model.DmfActionUpdateStatus;
 import org.eclipse.hawkbit.dmf.json.model.DmfAttributeUpdate;
 import org.eclipse.hawkbit.dmf.json.model.DmfUpdateMode;
 import org.eclipse.hawkbit.google.gcp.GcpIoTHandler;
-import org.eclipse.hawkbit.simulator.SimulationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -30,21 +29,17 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.support.converter.AbstractJavaTypeMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Sender service to send messages to update server.
  */
-@Component
 public class DmfSenderService extends MessageService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DmfSenderService.class);
 
 	private final String spExchange;
 
-	@Autowired
-	private GcpIoTHandler gcpIoTHandler;
+	private final GcpIoTHandler gcpIoTHandler;
 
 	/**
 	 *
@@ -53,9 +48,10 @@ public class DmfSenderService extends MessageService {
 	 * @param amqpProperties
 	 *            the amqp properties
 	 */
-	DmfSenderService(final RabbitTemplate rabbitTemplate, final AmqpProperties amqpProperties) {
+	DmfSenderService(final RabbitTemplate rabbitTemplate, final AmqpProperties amqpProperties, final GcpIoTHandler gcpIoTHandler) {
 		super(rabbitTemplate, amqpProperties);
 		spExchange = AmqpSettings.DMF_EXCHANGE;
+		this.gcpIoTHandler = gcpIoTHandler;
 		System.out.println("[DmfSenderService] init");
 	}
 

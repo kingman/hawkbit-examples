@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import org.eclipse.hawkbit.google.gcp.GcpBucketHandler;
+import org.eclipse.hawkbit.google.gcp.GcpIoTHandler;
 import org.eclipse.hawkbit.simulator.DeviceSimulatorRepository;
 import org.eclipse.hawkbit.simulator.DeviceSimulatorUpdater;
 import org.eclipse.hawkbit.simulator.SimulationProperties;
@@ -49,6 +50,9 @@ public class AmqpConfiguration {
     @Autowired
     private AmqpProperties amqpProperties;
 
+    @Autowired
+    private GcpIoTHandler gcpIoTHandler;
+
     @Bean
     RabbitTemplate rabbitTemplate(final ConnectionFactory connectionFactory) {
         final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -80,7 +84,7 @@ public class AmqpConfiguration {
 
     @Bean
     DmfSenderService dmfSenderService(final RabbitTemplate rabbitTemplate, final AmqpProperties amqpProperties) {
-        return new DmfSenderService(rabbitTemplate, amqpProperties);
+        return new DmfSenderService(rabbitTemplate, amqpProperties, gcpIoTHandler);
     }
 
     /**

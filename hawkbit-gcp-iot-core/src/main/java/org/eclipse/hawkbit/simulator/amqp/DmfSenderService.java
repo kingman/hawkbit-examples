@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.support.CorrelationData;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.support.converter.AbstractJavaTypeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,8 +52,6 @@ public class DmfSenderService extends MessageService {
 	 *            the rabbit template
 	 * @param amqpProperties
 	 *            the amqp properties
-	 * @param simulationProperties
-	 *            for attributes update class
 	 */
 	DmfSenderService(final RabbitTemplate rabbitTemplate, final AmqpProperties amqpProperties) {
 		super(rabbitTemplate, amqpProperties);
@@ -67,7 +65,7 @@ public class DmfSenderService extends MessageService {
 		final MessageProperties messageProperties = new MessageProperties();
 		messageProperties.getHeaders().put(MessageHeaderKey.TENANT, tenant);
 		messageProperties.getHeaders().put(MessageHeaderKey.TYPE, MessageType.PING.toString());
-		messageProperties.setCorrelationIdString(correlationId);
+		messageProperties.setCorrelationId(correlationId);
 		messageProperties.setReplyTo(amqpProperties.getSenderForSpExchange());
 		messageProperties.setContentType(MessageProperties.CONTENT_TYPE_TEXT_PLAIN);
 
@@ -125,7 +123,7 @@ public class DmfSenderService extends MessageService {
 		final String correlationId = UUID.randomUUID().toString();
 
 		if (isCorrelationIdEmpty(message)) {
-			message.getMessageProperties().setCorrelationIdString(correlationId);
+			message.getMessageProperties().setCorrelationId(correlationId);
 		}
 
 		if (LOGGER.isTraceEnabled()) {
@@ -140,8 +138,8 @@ public class DmfSenderService extends MessageService {
 	private static boolean isCorrelationIdEmpty(final Message message) {
 		System.out.println("[DmfSenderService] coorelation");
 
-		return message.getMessageProperties().getCorrelationIdString() == null
-				|| message.getMessageProperties().getCorrelationIdString().length() <= 0;
+		return message.getMessageProperties().getCorrelationId() == null
+				|| message.getMessageProperties().getCorrelationId().length() <= 0;
 	}
 
 	/**

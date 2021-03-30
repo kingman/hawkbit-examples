@@ -101,9 +101,13 @@ resource "google_cloudiot_registry" "device-registry" {
 
 resource "google_logging_project_sink" "iot-device-create" {
   name = "device-creation-event"
-  destination = google_pubsub_topic.iot-lifecycle-event.id
+  destination = "pubsub.googleapis.com/${google_pubsub_topic.iot-lifecycle-event.id}"
   filter = "resource.type = cloudiot_device AND protoPayload.methodName = google.cloud.iot.v1.DeviceManager.CreateDevice"
   unique_writer_identity = true
+
+  depends_on = [
+    google_pubsub_topic.iot-lifecycle-event
+  ]
 }
 
 resource "google_pubsub_topic_iam_member" "device-create-event-publishing-right" {

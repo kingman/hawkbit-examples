@@ -63,6 +63,18 @@ resource "google_pubsub_topic" "iot-state" {
   ]
 }
 
+resource "google_app_engine_application" "app" {
+  project     = var.google_project_id
+  location_id = substr(var.google_default_region, 0, length(var.google_default_region)-1)
+  database_type = "CLOUD_FIRESTORE"
+}
+
+resource "google_project_iam_member" "firestore_writer_binding" {
+  project = var.google_project_id
+  role    = "roles/datastore.user"
+  member  = "serviceAccount:${google_service_account.device-life-cycle-sa.email}"
+}
+
 resource "google_pubsub_topic" "iot-lifecycle-event" {
   name    = "iot-lifecycle-event"
   project = var.google_project_id

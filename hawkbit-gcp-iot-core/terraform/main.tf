@@ -121,7 +121,7 @@ data "archive_file" "device-life-cycle-handler-source" {
 
 resource "google_storage_bucket" "cf-source-bucket" {
   name = "cf-source-bucket-${var.google_project_id}"
-  bucket_policy_only = true
+  uniform_bucket_level_access = true
 }
 
 resource "google_storage_bucket_object" "device-life-cycle-handler-archive" {

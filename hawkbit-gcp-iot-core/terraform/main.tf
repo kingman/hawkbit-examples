@@ -135,6 +135,12 @@ data "archive_file" "device-life-cycle-handler-source" {
   source_dir = "../functions/device-life-cycle-handler"
 }
 
+data "archive_file" "device-state-handler-source" {
+  type        = "zip"
+  output_path = "../functions/device-state-handler-source.zip"
+  source_dir = "../functions/device-state-handler"
+}
+
 resource "google_storage_bucket" "cf-source-bucket" {
   name = "cf-source-bucket-${var.google_project_id}"
   uniform_bucket_level_access = true
@@ -144,6 +150,12 @@ resource "google_storage_bucket_object" "device-life-cycle-handler-archive" {
   name   = "device-life-cycle-handler-source.zip"
   bucket = google_storage_bucket.cf-source-bucket.name
   source = "../functions/device-life-cycle-handler-source.zip"
+}
+
+resource "google_storage_bucket_object" "device-state-handler-archive" {
+  name = "device-state-handler-source.zip"
+  bucket = google_storage_bucket.cf-source-bucket.name
+  source = "../functions/device-state-handler-source.zip"
 }
 
 resource "google_cloudfunctions_function" "device-life-cycle-handler-cf" {
@@ -175,3 +187,26 @@ resource "google_cloudfunctions_function" "device-life-cycle-handler-cf" {
     google_project_service.cloudbuild-apis
   ]
 }
+
+resource "google_cloudfunctions_function" "device-state-handler-cf" {
+  name        = "device-state-handler"
+  region      = var.google_default_region
+  runtime     = "nodejs10"
+
+  available_memory_mb   = 256
+  source_archive_bucket = google_storage_bucket.cf-source-bucket.name
+  source_archive_object = google_storage_bucket_object.device-state-handler-archive.name
+  event_trigger {
+    event_type = "google.pubsub.topic.publish"
+    resource = google_pubsub_topic.iot-state.id
+  }
+  timeout               = 60
+  entry_point           = "eventUpdate"
+  service_account_email =  google_service_account.device-life-cycle-sa.email
+
+  depends_on = [
+    google_project_service.functions-apis,
+    google_project_service.cloudbuild-apis
+  ]
+}
+
